@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import random
+import modules
 from modules import utils
 
 
@@ -31,7 +32,7 @@ class Field:
         if y_size is None or y_size < 3:
             return (False, "y_size")
         if (game_type != "obsessed" and game_type != "boundary" and
-            game_type != "endless"):
+                game_type != "endless"):
             return (False, "game type")
         return (True, None)
 
@@ -43,7 +44,7 @@ class Field:
                 cell_state = random.randrange(0, 101)
                 if cell_state <= self.life_density:
                     self.current_field[(x, y)] = "Alive"
-    
+
     def kill_life(self):
         """Clean all states of fields"""
         self.current_field = {}
@@ -69,7 +70,7 @@ class Field:
                     if (x, y) in previous_field:
                         self.heat_map[x][y] = min(
                             self.heat_range, self.heat_map[x][y]+1)
-    
+
     def _shift_cells_diag(self, field, d):
         shifted_field = {}
         for x in range(self.x_size):
@@ -77,7 +78,7 @@ class Field:
                 if (x, y) in field:
                     shifted_field[(x+d, y+d)] = field.pop((x, y))
         return shifted_field.copy()
-    
+
     def next_step(self):
         """Get next state of game field"""
         next_field = {}
@@ -92,7 +93,7 @@ class Field:
             for neigh in neighbors:
                 if self.alive_con(neigh, self.get_alive_neig_num(neigh)):
                     next_field[(neigh[0], neigh[1])] = "Alive"
-        while (self.game_type == "endless" and not 
+        while (self.game_type == "endless" and not
                self._is_cell_on_borderline(next_field)):
             self.current_field = self._shift_cells_diag(self.current_field, -1)
             next_field = self._shift_cells_diag(next_field, -1)
@@ -108,21 +109,21 @@ class Field:
             if (neig_cell_coor[0], neig_cell_coor[1]) in self.current_field:
                 alive_num += 1
         return alive_num
-    
+
     def get_neighbors(self, cell_coor):
         """Get all neighbors of cell"""
         x, y = cell_coor
         neighbors = []
         if self.game_type != "obsessed":
             neighbors = [(x+i, y+j)
-                        for i in range(-1, 2)
-                        for j in range(-1, 2)
-                        if not i == j == 0 and self.is_on_board((x+i, y+j))]
+                         for i in range(-1, 2)
+                         for j in range(-1, 2)
+                         if not i == j == 0 and self.is_on_board((x+i, y+j))]
         else:
             neighbors = [((x+i) % self.x_size, (y+j) % self.y_size)
-                        for i in range(-1, 2)
-                        for j in range(-1, 2)
-                        if not i == j == 0]
+                         for i in range(-1, 2)
+                         for j in range(-1, 2)
+                         if not i == j == 0]
         return neighbors
 
     def alive_con(self, cell_coor, alive_neig_num):
@@ -149,7 +150,7 @@ class Field:
         for x in range(self.x_size):
             for y in range(self.y_size):
                 if ((x == 0 or x == self.x_size - 1 or
-                    y == 0 or y == self.y_size - 1) and
-                    (x, y) in field):
+                        y == 0 or y == self.y_size - 1) and
+                        (x, y) in field):
                     return True
         return False

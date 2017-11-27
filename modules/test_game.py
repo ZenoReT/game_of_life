@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 import sys
-import os
 import unittest
-
 import game
 
 
@@ -14,6 +12,7 @@ class FieldTest(unittest.TestCase):
             self.assertTrue(True)
             return
         self.assertFalse(True)
+        return
 
     def test_correct_alive_neig_num_boundary(self):
         field = Field(3, 3, "boundary")
@@ -24,6 +23,7 @@ class FieldTest(unittest.TestCase):
         actual = field.get_alive_neig_num((0, 1))
 
         self.assertEqual(expected, actual)
+        return
 
     def test_correct_alive_neig_obsessed(self):
         field = Field(3, 3, "obsessed")
@@ -35,6 +35,7 @@ class FieldTest(unittest.TestCase):
         actual = field.get_alive_neig_num((0, 1))
 
         self.assertEqual(expected, actual)
+        return
 
     def test_correct_alive_neigh_endless(self):
         field = Field(3, 3, "endless")
@@ -47,6 +48,7 @@ class FieldTest(unittest.TestCase):
         actual = field.get_alive_neig_num((4, 1))
 
         self.assertEqual(expected, actual)
+        return
 
     def test_next_state_boundary(self):
         field = Field(3, 3, "boundary")
@@ -59,6 +61,7 @@ class FieldTest(unittest.TestCase):
         field.next_step()
 
         self.assertEqual(expected, field.current_field)
+        return
 
     def test_next_state_obsessed(self):
         field = Field(3, 3, "obsessed")
@@ -73,6 +76,7 @@ class FieldTest(unittest.TestCase):
         field.next_step()
 
         self.assertEqual(expected, field.current_field)
+        return
 
     def test_next_state_endless(self):
         field = Field(3, 3, "endless")
@@ -86,6 +90,7 @@ class FieldTest(unittest.TestCase):
         field.next_step()
 
         self.assertEqual(expected, field.current_field)
+        return
 
     def test_kill_life_correct(self):
         field = Field(5, 5, "obsessed")
@@ -93,6 +98,7 @@ class FieldTest(unittest.TestCase):
         field.kill_life()
 
         self.assertEqual({}, field.current_field)
+        return
 
     def test_heat_map_correct(self):
         field = Field(5, 5, "boundary")
@@ -115,6 +121,7 @@ class FieldTest(unittest.TestCase):
                     expected[x][y] = 0
 
         self.assertEqual(expected, field.heat_map)
+        return
 
     def test_get_neigh_correct(self):
         field = Field(5, 5, "boundary")
@@ -126,6 +133,7 @@ class FieldTest(unittest.TestCase):
         actual = field.get_neighbors((2, 2))
 
         self.assertEqual(expected, actual)
+        return
 
     def test_shift_cells_diag_left_correct(self):
         field = Field(5, 5, "endless")
@@ -143,6 +151,7 @@ class FieldTest(unittest.TestCase):
                     (3, 3): "Alive"}
 
         self.assertEqual(expected, field.current_field)
+        return
 
     def test_shift_cells_diag_right_correct(self):
         field = Field(5, 5, "endless")
@@ -160,6 +169,7 @@ class FieldTest(unittest.TestCase):
                     (5, 5): "Alive"}
 
         self.assertEqual(expected, field.current_field)
+        return
 
 
 if __name__ == '__main__':

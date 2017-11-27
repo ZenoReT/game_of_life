@@ -103,17 +103,16 @@ class Menu:
 
         self._performed = False
 
-
     def _generate(self, game_field, gui_render_field):
         game_field.generate()
         gui_render_field.render_next_field(game_field)
-    
+
     def _start(self, game_field, gui_render_field):
         self._performed = True
         sleep_time = 100
         while self._performed:
             root.after(sleep_time, game_field.next_step(),
-                        gui_render_field.render_next_field(game_field))
+                       gui_render_field.render_next_field(game_field))
             root.update()
 
     def _stop(self, game_field, gui_render_field):
@@ -175,6 +174,7 @@ class Menu:
         self.info_label.config(text="size: {0} {1} game type: {2} heat range: {3} life density %: {4}".format(
                game_field.x_size, game_field.y_size, game_field.game_type, game_field.heat_range, game_field.life_density))
 
+
 class Field_render:
     def __init__(self, game_field):
         self.window_width = 900
@@ -199,13 +199,13 @@ class Field_render:
             game_field.current_field[(x, y)] = "Alive"
             self.canv.itemconfigure(ip, fill="green")
 
-    def refresh_cells_size(self, game_field):
+    def update_cells_size(self, game_field):
         self.cell_width = self.window_width / game_field.x_size
         self.cell_height = self.window_height / game_field.y_size
 
     def render_next_field(self, game_field):
         """Next graphic representation of game field"""
-        self.refresh_cells_size(game_field)
+        self.update_cells_size(game_field)
         self.canv.delete("all")
         for x in range(game_field.x_size):
             for y in range(game_field.y_size):
@@ -232,7 +232,7 @@ class Field_render:
     def render_heat_map(self, game_field):
         """Next graphic representation of heat map"""
         if (game_field.game_type == "endless" or
-             len(game_field.previous_fields) == 0):
+                len(game_field.previous_fields) == 0):
             return
         game_field.get_heat_map_state()
         self.canv.delete("all")
