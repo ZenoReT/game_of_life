@@ -75,8 +75,10 @@ class Menu:
         self.type_listbox = Listbox(frame, height=3, width=15)
         self.info_label = Label(
             root,
-            text="size: {0} {1} game type: {2} heat range: {3} life density %: {4}".format(
-               game_field.x_size, game_field.y_size, game_field.game_type, game_field.heat_range, game_field.life_density))
+            text="size: {0} {1} game type: {2} heat range: {3}\
+                                life density %: {4}".format(
+               game_field.x_size, game_field.y_size, game_field.game_type,
+               game_field.heat_range, game_field.life_density))
 
         game_types_list = ["boundary", "obsessed", "endless"]
         for game_type in game_types_list:
@@ -142,8 +144,10 @@ class Menu:
         game_field.x_size = x_size
         game_field.y_size = y_size
         gui_render_field.render_next_field(game_field)
-        self.info_label.config(text="size: {0} {1} game type: {2} heat range: {3} life density %: {4}".format(
-               game_field.x_size, game_field.y_size, game_field.game_type, game_field.heat_range, game_field.life_density))
+        self.info_label.config(text="size: {0} {1} game type: {2} heat range: {3}\
+                                life density %: {4}".format(
+               game_field.x_size, game_field.y_size, game_field.game_type,
+               game_field.heat_range, game_field.life_density))
 
     def _change_heat_range(self, game_field):
         """Change heat range of heat map"""
@@ -151,8 +155,10 @@ class Menu:
         if heat_range is None or heat_range < 2:
             return
         game_field.heat_range = heat_range
-        self.info_label.config(text="size: {0} {1} game type: {2} heat range: {3} life density %: {4}".format(
-               game_field.x_size, game_field.y_size, game_field.game_type, game_field.heat_range, game_field.life_density))
+        self.info_label.config(text="size: {0} {1} game type: {2} heat range: {3}\
+                                life density %: {4}".format(
+               game_field.x_size, game_field.y_size, game_field.game_type,
+               game_field.heat_range, game_field.life_density))
 
     def _change_life_density(self, game_field):
         """Change heat range of heat map"""
@@ -160,8 +166,10 @@ class Menu:
         if life_density is None or life_density < 0 or life_density > 100:
             return
         game_field.life_density = life_density
-        self.info_label.config(text="size: {0} {1} game type: {2} heat range: {3} life density %: {4}".format(
-               game_field.x_size, game_field.y_size, game_field.game_type, game_field.heat_range, game_field.life_density))
+        self.info_label.config(text="size: {0} {1} game type: {2} heat range: {3}\
+                                life density %: {4}".format(
+               game_field.x_size, game_field.y_size, game_field.game_type,
+               game_field.heat_range, game_field.life_density))
 
     def _change_type(self, game_field, gui_render_field):
         """Change game type"""
@@ -171,8 +179,10 @@ class Menu:
             gui_render_field.render_next_field(game_field)
         else:
             return
-        self.info_label.config(text="size: {0} {1} game type: {2} heat range: {3} life density %: {4}".format(
-               game_field.x_size, game_field.y_size, game_field.game_type, game_field.heat_range, game_field.life_density))
+        self.info_label.config(text="size: {0} {1} game type: {2} heat range: {3}\
+                                life density %: {4}".format(
+               game_field.x_size, game_field.y_size, game_field.game_type,
+               game_field.heat_range, game_field.life_density))
 
 
 class Field_render:

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import sys
 import unittest
-import game
+from modules import game
 
 
 class FieldTest(unittest.TestCase):
