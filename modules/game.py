@@ -68,7 +68,7 @@ class Field:
                 for y in range(self.y_size):
                     if (x, y) in previous_field:
                         self.heat_map[x][y] = min(
-                            self.heat_range, self.heat_map[x][y]+1)
+                            self.heat_range, self.heat_map[x][y] + 1)
 
     def _shift_cells_diag(self, field, d):
         shifted_field = {}
@@ -98,8 +98,9 @@ class Field:
             next_field = self._shift_cells_diag(next_field, -1)
             self.x_size -= 2
             self.y_size -= 2
-        self.previous_fields.append(self.current_field.copy())
-        self.current_field = next_field.copy()
+        if not self._have_eden_garden(self.current_field, next_field):
+            self.previous_fields.append(self.current_field.copy())
+            self.current_field = next_field.copy()
 
     def get_alive_neig_num(self, cell_coor):
         """Count alive neighbors of cell"""
@@ -152,4 +153,9 @@ class Field:
                         y == 0 or y == self.y_size - 1) and
                         (x, y) in field):
                     return True
+        return False
+
+    def _have_eden_garden(self, current_field, next_field):
+        if current_field == next_field:
+            return True
         return False

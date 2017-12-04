@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Console version of <Game Of Life>"""
 import sys
+import argparse
 from sys import argv
 from modules import game
 from modules import utils
-
+parser = argparse.ArgumentParser()
 
 game_field = game.Field(25, 25, "boundary")
 help_dict = {'g': 'generate game field',

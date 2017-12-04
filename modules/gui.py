@@ -112,10 +112,15 @@ class Menu:
     def _start(self, game_field, gui_render_field):
         self._performed = True
         sleep_time = 100
+        previous_fields_len = 0
         while self._performed:
+            if previous_fields_len > len(game_field.previous_fields):
+                break
             root.after(sleep_time, game_field.next_step(),
                        gui_render_field.render_next_field(game_field))
             root.update()
+            previous_fields_len += 1
+        self._performed = False
 
     def _stop(self, game_field, gui_render_field):
         self._performed = False

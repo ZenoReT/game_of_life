@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Graphic version of <Game Of Life>"""
-
+import sys
+import time
 from modules.gui import *
 from modules.game import *
-import time
 
 
 def main():

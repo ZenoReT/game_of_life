@@ -100,7 +100,7 @@ class Test_field(unittest.TestCase):
         self.assertEqual({}, field.current_field)
         return
 
-    def test_heat_map_correct(self):
+    def test_heat_map_correct_with_eden(self):
         field = Field(5, 5, "boundary")
         field.current_field = {(2, 1): "Alive",
                                (2, 2): "Alive",
@@ -111,14 +111,30 @@ class Test_field(unittest.TestCase):
         field.get_heat_map_state()
 
         expected = []
+
+        self.assertEqual(expected, field.heat_map)
+        return
+
+    def test_heat_map_correct_without_eden(self):
+        field = Field(5, 5, "boundary")
+        field.current_field = {(2, 1): "Alive",
+                               (2, 2): "Alive",
+                               (2, 3): "Alive"}
+        for x in range(3):
+            field.next_step()
+        field.get_heat_map_state()
+
+        expected = []
         for x in range(field.x_size):
             expected.append([])
             for y in range(field.y_size):
                 expected[x].append([])
-                if (x == 2 or x == 3) and (y == 1 or y == 2):
-                    expected[x][y] = 3
-                else:
-                    expected[x][y] = 0
+                expected[x][y] = 0
+        expected[2][1] = 2
+        expected[2][2] = 3
+        expected[2][3] = 2
+        expected[1][2] = 1
+        expected[3][2] = 1
 
         self.assertEqual(expected, field.heat_map)
         return
@@ -171,6 +187,16 @@ class Test_field(unittest.TestCase):
         self.assertEqual(expected, field.current_field)
         return
 
+    def test_have_eden_garden(self):
+        field = Field(5, 5, "boundary")
+        field.current_field = {(0, 0): "Alive",
+                               (0, 1): "Alive",
+                               (1, 0): "Alive",
+                               (1, 1): "Alive"}
+        field.next_step()
+        field.next_step()
+
+        self.assertEqual(len(field.previous_fields), 0)
 
 if __name__ == '__main__':
     unittest.main()
