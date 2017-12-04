@@ -4,7 +4,7 @@ import unittest
 from modules.game import Field
 
 
-class FieldTest(unittest.TestCase):
+class Test_field(unittest.TestCase):
     def test_incorrect_init(self):
         try:
             field = Field(0, 0, "boundary")
