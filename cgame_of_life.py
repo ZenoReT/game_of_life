@@ -5,98 +5,117 @@ import argparse
 from sys import argv
 from modules import game
 from modules import utils
-parser = argparse.ArgumentParser()
-
-game_field = game.Field(25, 25, "boundary")
-help_dict = {'g': 'generate game field',
-             'k': 'clear field and make all cells are dead',
-             'ps': 'get previous state of field',
-             'phm': 'print heat map on console',
-             'ns': 'get next state of field',
-             'pf': 'print field on console',
-             'chr': 'change heat range (> 0)',
-             'cld': 'change life density for next generation (0 - 100%)',
-             'ct': 'change type of game (obsessed boundary endless)',
-             'cs': 'change size of field (x, y > 3)',
-             'ccs': 'change cell state (x, y on field, state: dead, alive)'}
 
 
 def main():
-    args = sys.argv[1:]
-    basic_commands_comparer = {'g': game_field.generate,
-                               'k': game_field.kill_life,
-                               'ps': game_field.previous_field,
-                               'phm': print_heat_map,
-                               'ns': game_field.next_step,
-                               'pf': print_field}
-    commands_with_one_arg_comparer = {'chr': change_heat_range,
-                                      'cld': change_life_density,
-                                      'ct': change_type}
-    commands_with_two_args_comparer = {'cs': change_size}
-    commands_with_three_args_comparer = {'ccs': change_cell_state}
-    comparers = (basic_commands_comparer, commands_with_one_arg_comparer,
-                 commands_with_two_args_comparer,
-                 commands_with_three_args_comparer)
+    game_field = game.Field(25, 25, 'boundary')
+    parser = create_parser()
+    args = input('Input new args: ').split()
     while len(args) != 0:
-        treat_args(args, comparers)
-        print('------------------------\n\
-               \rcurrent size: {0} {1}\n\
-               \rcurrent_type: {2}\n\
-               \rcurrent heat range: {3}\n\
-               \rcurrent life density: {4}\n\
-               \r------------------------'.format(game_field.x_size,
-                                                  game_field.y_size,
-                                                  game_field.game_type,
-                                                  game_field.heat_range,
-                                                  game_field.life_density))
-        args = input('Input new args: ').rsplit()
-    return
+        parsed_args = parser.parse_args(args)
+        treat_args(parsed_args, game_field)
+        print_states(game_field)
+        args = input('Input new args: ').split()
 
 
-def treat_args(args, comparers):
-    key_id = 0
-    while key_id < len(args):
-        key = args[key_id].lower()
-        if key in comparers[0]:
-            comparers[0][args[key_id]]()
-        elif key in comparers[1]:
-            print(key_id)
-            try:
-                comparers[1][key](args[key_id + 1])
-            except:
-                print('there are not enough arguments for this key: {0}'
-                      .format(key))
-                break
-            key_id += 1
-            print(key_id)
-        elif key in comparers[2]:
-            try:
-                comparers[2][key](args[key_id + 1], args[key_id + 2])
-            except:
-                print('there are not enough arguments for this key: {0}'
-                      .format(key))
-                break
-            key_id += 2
-        elif key in comparers[3]:
-            try:
-                comparers[3][key](args[key_id + 1],
-                                  args[key_id + 2],
-                                  args[key_id + 3])
-            except:
-                print('there are not enough arguments for this key: {0}'
-                      .format(key))
-                break
-            key_id += 3
-        elif key == 'h' or key == '--h':
-            print_help(comparers)
-        else:
-            print('There are no such key: {0}'.format(key))
-            break
-        key_id += 1
-    return
+def print_states(game_field):
+    print('------------------------\n\
+            \rcurrent size: {0} {1}\n\
+            \rcurrent_type: {2}\n\
+            \rcurrent heat range: {3}\n\
+            \rcurrent life density: {4}\n\
+            \rcurrent count of previous fields: {5}\n\
+            \r------------------------'
+          .format(game_field.x_size,
+                  game_field.y_size,
+                  game_field.game_type,
+                  game_field.heat_range,
+                  game_field.life_density,
+                  len(game_field.previous_fields)))
 
 
-def change_heat_range(heat_range):
+def create_parser():
+    parser = argparse.ArgumentParser(
+        description='Console version of games_of_life:\n\
+                    \rThe list of keys:\n\
+                    \r-g\n\
+                    \r-k\n\
+                    \r-ps\n\
+                    \r-phm\n\
+                    \r-ns\n\
+                    \r-pf\n\
+                    \r-chr\n\
+                    \r-cld\n\
+                    \r-ct\n\
+                    \r-cs\n\
+                    \r-ccs')
+    parser.add_argument('-g', '--generate',
+                        help='generate game field',
+                        action='store_true')
+    parser.add_argument('-kl', '--kill_life',
+                        help='clear field and make all cells are dead',
+                        action='store_true')
+    parser.add_argument('-ps', '--previous_state',
+                        help='get previous state of field',
+                        action='store_true')
+    parser.add_argument('-phm', '--print_heat_map',
+                        help='print heat map on console',
+                        action='store_true')
+    parser.add_argument('-ns', '--next_state',
+                        help='get next state of field',
+                        action='store_true')
+    parser.add_argument('-pf', '--print_field',
+                        help='print field on console',
+                        action='store_true')
+    parser.add_argument('-chr', '--change_heat_range',
+                        type=int,
+                        help='change heat range (value > 0)')
+    parser.add_argument('-cld', '--change_life_density',
+                        type=int,
+                        help='change life density for next generation\
+                              (value in range 0 - 100%%)')
+    parser.add_argument('-ct', '--change_type',
+                        type=str,
+                        help='change type of game: obsessed boundary endless')
+    parser.add_argument('-cs', '--change_size',
+                        nargs=2,
+                        help='change size of field: x, y > 3')
+    parser.add_argument('-ccs', '--change_cell_state',
+                        nargs=3,
+                        help='change cell state:\
+                              x, y on field,\
+                              state: dead, alive')
+    return parser
+
+
+def treat_args(parsed_args, game_field):
+    if parsed_args.generate:
+        game_field.generate()
+    if parsed_args.kill_life:
+        game_field.kill_life()
+    if parsed_args.previous_state:
+        game_field.previous_field()
+    if parsed_args.print_heat_map:
+        print_heat_map(game_field)
+    if parsed_args.next_state:
+        game_field.next_step()
+    if parsed_args.print_field:
+        print_field(game_field)
+    if parsed_args.change_heat_range:
+        change_heat_range(parsed_args.change_heat_range, game_field)
+    if parsed_args.change_life_density:
+        change_life_density(parsed_args.change_life_density, game_field)
+    if parsed_args.change_type:
+        change_type(parsed_args.change_type, game_field)
+    if parsed_args.change_size:
+        x, y = parsed_args.change_size
+        change_size(x, y, game_field)
+    if parsed_args.change_cell_state:
+        x, y, state = parsed_args.change_cell_state
+        change_cell_state(x, y, state, game_field)
+
+
+def change_heat_range(heat_range, game_field):
     heat_range = utils.parse_int(heat_range)
     if heat_range is None or heat_range < 2:
         return
@@ -104,7 +123,7 @@ def change_heat_range(heat_range):
     return
 
 
-def change_life_density(life_density):
+def change_life_density(life_density, game_field):
     life_density = utils.parse_int(life_density)
     if life_density is None or life_density < 0 or life_density > 100:
         return
@@ -112,7 +131,7 @@ def change_life_density(life_density):
     return
 
 
-def change_type(game_type):
+def change_type(game_type, game_field):
     game_type = game_type.lower()
     if (game_type != game_field.game_type and (game_type == "obsessed" or
                                                game_type == "boundary" or
@@ -124,7 +143,7 @@ def change_type(game_type):
     return
 
 
-def change_size(x, y):
+def change_size(x, y, game_field):
     """Change size of game field"""
     x_size = utils.parse_int(x)
     y_size = utils.parse_int(y)
@@ -136,14 +155,7 @@ def change_size(x, y):
     return
 
 
-def print_help(comparers):
-    for comparer in comparers:
-        for key in comparer:
-            print('{0} {1}'.format(key, help_dict[key]))
-    return
-
-
-def print_field():
+def print_field(game_field):
     representation = ''
     for y in range(game_field.y_size):
         for x in range(game_field.x_size):
@@ -156,7 +168,7 @@ def print_field():
     return
 
 
-def print_heat_map():
+def print_heat_map(game_field):
     game_field.get_heat_map_state()
     representation = ''
     if len(game_field.previous_fields) == 0:
@@ -170,7 +182,7 @@ def print_heat_map():
     return
 
 
-def change_cell_state(x, y, state):
+def change_cell_state(x, y, state, game_field):
     x = utils.parse_int(x)
     y = utils.parse_int(y)
     state = state.lower()
