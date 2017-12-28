@@ -36,37 +36,37 @@ class Menu:
         self.change_life_density_but.config(text="change life density %")
 
         self.generate_but.bind(
-            "<Button-1>",
+            "<ButtonRelease-1>",
             lambda event: self._generate(game_field, gui_render_field))
         self.start_but.bind(
-            "<Button-1>",
+            "<ButtonRelease-1>",
             lambda event: self._start(game_field, gui_render_field))
         self.stop_but.bind(
-            "<Button-1>",
+            "<ButtonRelease-1>",
             lambda event: self._stop(game_field, gui_render_field))
         self.kill_life_but.bind(
-            "<Button-1>",
+            "<ButtonRelease-1>",
             lambda event: self._kill_life(game_field, gui_render_field))
         self.previous_state_but.bind(
-            "<Button-1>",
+            "<ButtonRelease-1>",
             lambda event: self._previous(game_field, gui_render_field))
         self.next_state_but.bind(
-            "<Button-1>",
+            "<ButtonRelease-1>",
             lambda event: self._next(game_field, gui_render_field))
         self.change_size_but.bind(
-            "<Button-1>",
+            "<ButtonRelease-1>",
             lambda event: self._change_size(game_field, gui_render_field))
         self.change_game_type_but.bind(
-            "<Button-1>",
+            "<ButtonRelease-1>",
             lambda event: self._change_type(game_field, gui_render_field))
         self.heat_map_but.bind(
-            "<Button-1>",
-            lambda event: gui_render_field.render_heat_map(game_field))
+            "<ButtonRelease-1>",
+            lambda event: self._change_heat_mode(game_field, gui_render_field))
         self.change_heat_range_but.bind(
-            "<Button-1>",
+            "<ButtonRelease-1>",
             lambda event: self._change_heat_range(game_field))
         self.change_life_density_but.bind(
-            "<Button-1>",
+            "<ButtonRelease-1>",
             lambda event: self._change_life_density(game_field))
 
         self.size_entry = Entry(frame)
@@ -101,9 +101,10 @@ class Menu:
         self.change_life_density_but.grid(row=2, column=4)
         self.info_label.grid(row=3, column=0)
 
-        root.mainloop()
-
         self._performed = False
+        self._heat_mode = False
+
+        root.mainloop()
 
     def _generate(self, game_field, gui_render_field):
         game_field.generate()
@@ -116,11 +117,14 @@ class Menu:
         while self._performed:
             if previous_fields_len > len(game_field.previous_fields):
                 break
-            root.after(sleep_time, game_field.next_step(),
-                       gui_render_field.render_next_field(game_field))
+            if self._heat_mode:
+                root.after(sleep_time, game_field.next_step(),
+                           gui_render_field.render_heat_map(game_field))
+            else:
+                root.after(sleep_time, game_field.next_step(),
+                           gui_render_field.render_next_field(game_field))
             root.update()
             previous_fields_len += 1
-        self._performed = False
 
     def _stop(self, game_field, gui_render_field):
         self._performed = False
@@ -131,11 +135,17 @@ class Menu:
 
     def _previous(self, game_field, gui_render_field):
         game_field.previous_field()
-        gui_render_field.render_next_field(game_field)
+        if self._heat_mode:
+            gui_render_field.render_heat_map(game_field)
+        else:
+            gui_render_field.render_next_field(game_field)
 
     def _next(self, game_field, gui_render_field):
         game_field.next_step()
-        gui_render_field.render_next_field(game_field)
+        if self._heat_mode:
+            gui_render_field.render_heat_map(game_field)
+        else:
+            gui_render_field.render_next_field(game_field)
 
     def _change_size(self, game_field, gui_render_field):
         """Change size of game field"""
@@ -179,15 +189,24 @@ class Menu:
     def _change_type(self, game_field, gui_render_field):
         """Change game type"""
         game_type = self.type_listbox.get(ACTIVE)
-        if (game_type != game_field.game_type):
+        if game_type != game_field.game_type:
             game_field.game_type = game_type
-            gui_render_field.render_next_field(game_field)
+            if game_type == "endless":
+                self._heat_mode = False
         else:
             return
         self.info_label.config(text="size: {0} {1} game type: {2} heat range: {3}\
                                 life density %: {4}".format(
                game_field.x_size, game_field.y_size, game_field.game_type,
                game_field.heat_range, game_field.life_density))
+
+    def _change_heat_mode(self, game_field, gui_render_field):
+        if self._heat_mode:
+            self._heat_mode = False
+            gui.render_field.render_field(game_field)
+        elif game_field.game_type != "endless":
+            self._heat_mode = True
+            gui_render_field.render_heat_map(game_field)
 
 
 class Field_render:
@@ -239,7 +258,7 @@ class Field_render:
                     outline="black")
                 self.canv.tag_bind(
                     ip,
-                    "<Button-1>",
+                    "<ButtonRelease-1>",
                     lambda event, x=x, y=y, ip=ip:
                     self.change_cell(game_field, x, y, ip))
         self.canv.grid(row=1, column=0)

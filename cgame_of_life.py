@@ -156,29 +156,27 @@ def change_size(x, y, game_field):
 
 
 def print_field(game_field):
-    representation = ''
+    representation = []
     for y in range(game_field.y_size):
         for x in range(game_field.x_size):
-            if (x, y) in game_field.current_field:
-                representation += ' ' + '#'
-            else:
-                representation += ' ' + '.'
-        print(representation)
-        representation = ''
+            element = "#" if (x, y) in game_field.current_field else "."
+            representation.append(element)
+        print(' '.join(representation))
+        representation = []
     return
 
 
 def print_heat_map(game_field):
     game_field.get_heat_map_state()
-    representation = ''
+    representation = []
     if len(game_field.previous_fields) == 0:
         print('There are no previous field, make some steps')
         return
     for y in range(game_field.y_size):
         for x in range(game_field.x_size):
-            representation += ' ' + str(game_field.heat_map[x][y])
-        print(representation)
-        representation = ''
+            representation.append(str(game_field.heat_map[x][y]))
+        print(' '.join(representation))
+        representation = []
     return
 
 
